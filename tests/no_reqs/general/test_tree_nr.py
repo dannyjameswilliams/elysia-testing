@@ -16,13 +16,14 @@ def test_tree_init_with_settings():
 
 
 def test_run_tree():
-    tree = Tree()
-    tree.settings.configure(
+    settings = Settings()
+    settings.configure(
         base_model="gpt-4o-mini",
         base_provider="openai",
         complex_model="gpt-4o",
         complex_provider="openai",
     )
+    tree = Tree(settings=settings)
     response, objects = tree.run("Hi!")
     assert response is not None and len(response) > 0
     assert len(objects) is not None

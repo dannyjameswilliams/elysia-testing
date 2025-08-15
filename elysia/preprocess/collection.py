@@ -1201,7 +1201,7 @@ async def edit_preprocessed_collection_async(
                 )
 
             # check if there is a message type as well as conversation
-            if "message" not in mappings and "conversation" not in mappings:
+            if "message" not in mappings and "conversation" in mappings:
                 raise ValueError(
                     "Conversation type requires message type to also be set as a fallback."
                 )

@@ -1192,6 +1192,13 @@ class Tree:
         if function_name not in self.tree_data.errors:
             self.tree_data.errors[function_name] = []
 
+        self.tree_data.update_tasks_completed(
+            prompt=self.user_prompt,
+            task=function_name,
+            num_trees_completed=self.tree_data.num_trees_completed,
+            error=True,
+        )
+
         if error.feedback != "An unknown issue occurred.":
             self.tree_data.errors[function_name].append(
                 "Avoidable error: "

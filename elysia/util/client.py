@@ -270,6 +270,11 @@ class ClientManager:
             ...
         ```
         """
+        if not self.is_client:
+            raise ValueError(
+                "Weaviate is not available. Please set the WCD_URL and WCD_API_KEY in the settings."
+            )
+
         self.sync_restart_event.wait()
         with self.sync_lock:
             self.sync_in_use_counter += 1
@@ -295,6 +300,11 @@ class ClientManager:
             ...
         ```
         """
+        if not self.is_client:
+            raise ValueError(
+                "Weaviate is not available. Please set the WCD_URL and WCD_API_KEY in the settings."
+            )
+
         if not self.async_init_completed:
             await self.start_clients()
 

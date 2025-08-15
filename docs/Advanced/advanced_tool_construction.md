@@ -21,6 +21,7 @@ A tool must be initialised with
             status=..., # optional
             inputs=..., # optional
             end=..., # optional
+            **kwargs # required
         )
 ```
 

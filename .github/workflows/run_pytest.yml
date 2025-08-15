@@ -45,43 +45,14 @@ jobs:
         
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        if: (!cancelled())
         with:
           files: |
             pytest-results.xml
           check_name: "Pytest Results"
           comment_title: "Unit Test Results"
-          comment_mode: create new
+          comment_mode: always
           
-      - name: Comment PR (Custom)
-        uses: actions/github-script@v6
-        if: always()
-        with:
-          script: |
-            const fs = require('fs');
-            
-            // Read pytest exit code from previous step
-            const testsPassed = '${{ steps.pytest.outcome }}' === 'success';
-            
-            let comment = '## 🧪 Test Results\n\n';
-            
-            if (testsPassed) {
-              comment += '✅ **All tests passed!**\n\n';
-              comment += '🎉 Great job! Your changes look good to go.';
-            } else {
-              comment += '❌ **Some tests failed**\n\n';
-              comment += 'Please check the test output above and fix any failing tests.';
-            }
-            
-            comment += `\n\n---\n*Workflow run: [${context.runId}](${context.payload.repository.html_url}/actions/runs/${context.runId})*`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-
       - name: Fail job if tests failed
         if: steps.pytest.outcome == 'failure'
         run: exit 1

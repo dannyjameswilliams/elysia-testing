@@ -109,6 +109,7 @@ jobs:
           git checkout tags/${{ github.event.client_payload.release_tag }}
 
           echo "Running assemble script to build static files..."
+          npm install
           npm run assemble
 
           echo "Moving back to root directory"

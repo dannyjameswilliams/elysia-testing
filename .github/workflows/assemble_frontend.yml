@@ -99,10 +99,10 @@ jobs:
           echo "Cloning elysia-frontend repository..."
           git clone https://github.com/dannyjameswilliams/elysia-frontend-testing
 
-          echo "Changing directory to elysia-frontend"
-          cd elysia-frontend
+          echo "Changing directory to elysia-frontend-testing"
+          cd elysia-frontend-testing
 
-          echo "Fetching tags from elysia-frontend..."
+          echo "Fetching tags from elysia-frontend-testing..."
           git fetch --tags
 
           echo "Checking out release tag: ${{ github.event.client_payload.release_tag }}"

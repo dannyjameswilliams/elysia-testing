@@ -112,6 +112,9 @@ jobs:
           echo "Checking out release tag: ${{ github.event.client_payload.release_tag }}"
           git checkout tags/${{ github.event.client_payload.release_tag }}
 
+          echo "Removing current static files"
+          rm -rf elysia/api/static/*
+
           echo "Running assemble script to build static files..."
           npm install
           npm run assemble
@@ -128,9 +131,10 @@ jobs:
           
           echo "Adding built static files to git..."
           git add elysia/api/static/
+          git add elysia/api/static/*
           
           echo "Checking git status after add..."
-          git status --cached
+          git status
           
           # Only commit if there are actually changes to commit
           if git diff --cached --quiet; then

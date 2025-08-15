@@ -6,8 +6,7 @@ on:
       - main
       - dev
       - 'release/*'
-      - 'v*'
-
+      
 permissions:
   contents: read
   pull-requests: write  
@@ -85,4 +84,8 @@ jobs:
 
       - name: Fail job if tests failed
         if: steps.pytest.outcome == 'failure'
+<<<<<<< HEAD
         run: exit 1
+=======
+        run: exit 1
+>>>>>>> 6ed3351cb80e480cd92358fcc550d96f26e35cec

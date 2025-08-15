@@ -85,7 +85,7 @@ jobs:
           echo "Created working branch: $WORKING_BRANCH"
           echo "Based on target branch: $TARGET_BRANCH"
 
-      - name: Run your commands
+      - name: Build and prepare files
         if: steps.version.outputs.valid_version == 'true' && steps.branch_check.outputs.branch_exists == 'true'
         run: |
           echo "Processing release: ${{ github.event.client_payload.release_tag }}"
@@ -96,10 +96,10 @@ jobs:
           echo "Configuring git identity..."
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          
-          echo "Switching to working branch: ${{ steps.working_branch.outputs.WORKING_BRANCH }}"
-          git checkout ${{ steps.working_branch.outputs.WORKING_BRANCH }}
 
+          # Checkout target branch first
+          git checkout ${{ steps.version.outputs.target_branch }}
+          
           echo "Cloning elysia-frontend repository..."
           git clone https://github.com/dannyjameswilliams/elysia-frontend-testing
 
@@ -111,11 +111,11 @@ jobs:
 
           echo "Checking out release tag: ${{ github.event.client_payload.release_tag }}"
           git checkout tags/${{ github.event.client_payload.release_tag }}
-
+          
           echo "Removing current static files"
-          rm -rf elysia/api/static/*
-
-          echo "Running assemble script to build static files..."
+          rm -rf ../elysia/api/static/*
+          
+          echo "Running assemble script..."
           npm install
           npm run assemble
 
@@ -125,22 +125,6 @@ jobs:
           echo "Removing the cloned frontend repository to avoid submodule issues..."
           rm -rf elysia-frontend-testing/.git
           rm -rf elysia-frontend-testing
-
-          echo "Checking what files were created/modified..."
-          git status
-          
-          echo "Adding built static files to git..."
-          git add elysia/api/static/
-          git add elysia/api/static/*
-          
-          echo "Checking git status after add..."
-          git status
-
-          echo "Committing changes with message: Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"
-          git commit -m "Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"
-
-          echo "Pushing changes to branch: ${{ steps.working_branch.outputs.WORKING_BRANCH }}"
-          git push origin ${{ steps.working_branch.outputs.WORKING_BRANCH }}
 
       - name: Create Pull Request
         if: steps.version.outputs.valid_version == 'true' && steps.branch_check.outputs.branch_exists == 'true'
@@ -165,7 +149,7 @@ jobs:
             - Patch: `${{ steps.version.outputs.patch }}`
             
             Please review the changes before merging into `${{ steps.version.outputs.target_branch }}`.
-          branch: ${{ steps.working_branch.outputs.working_branch }}
+          branch: "auto-frontend-deploy/${{ github.event.client_payload.release_tag }}"
           base: ${{ steps.version.outputs.target_branch }}
-          delete-branch: false
+          delete-branch: true
           draft: false

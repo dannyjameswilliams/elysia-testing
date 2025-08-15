@@ -97,13 +97,14 @@ jobs:
           git checkout ${{ steps.working_branch.outputs.WORKING_BRANCH }}
 
           echo "Cloning elysia-frontend repository..."
-          git clone https://github.com/weaviate/elysia-frontend.git
+          git clone https://github.com/dannyjameswilliams/elysia-frontend-testing
 
           echo "Changing directory to elysia-frontend"
           cd elysia-frontend
 
           echo "Fetching tags from elysia-frontend..."
           git fetch --tags
+
           echo "Checking out release tag: ${{ github.event.client_payload.release_tag }}"
           git checkout tags/${{ github.event.client_payload.release_tag }}
 

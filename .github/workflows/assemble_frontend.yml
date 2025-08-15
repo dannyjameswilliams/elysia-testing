@@ -115,6 +115,10 @@ jobs:
           echo "Moving back to root directory"
           cd ..
 
+          echo "Configuring git identity..."
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
           echo "Adding built static files to git..."
           git add elysia/api/static/*
 

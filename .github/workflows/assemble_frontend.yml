@@ -116,7 +116,7 @@ jobs:
           cd ..
 
           echo "Adding built static files to git..."
-          git add api/static/*
+          git add elysia/api/static/*
 
           echo "Committing changes with message: Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"
           git commit -m "Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"

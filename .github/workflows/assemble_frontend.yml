@@ -103,7 +103,8 @@ jobs:
           cd elysia-frontend
 
           # move to the release tag in the frontend repo
-          git checkout ${{ github.event.client_payload.release_tag }}
+          git fetch --tags
+          git checkout tags/${{ github.event.client_payload.release_tag }}
 
           # run the assemble script to build static files
           npm run assemble

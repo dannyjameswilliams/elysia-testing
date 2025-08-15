@@ -97,6 +97,9 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
+          echo "Pulling latest changes from origin"
+          git pull origin ${{ steps.working_branch.outputs.WORKING_BRANCH }}
+          
           echo "Switching to working branch: ${{ steps.working_branch.outputs.WORKING_BRANCH }}"
           git checkout ${{ steps.working_branch.outputs.WORKING_BRANCH }}
 
@@ -119,8 +122,24 @@ jobs:
           echo "Moving back to root directory"
           cd ..
 
+          echo "Removing the cloned frontend repository to avoid submodule issues..."
+          rm -rf elysia-frontend-testing/.git
+          rm -rf elysia-frontend-testing
+
+          echo "Checking what files were created/modified..."
+          git status
+          
           echo "Adding built static files to git..."
-          git add elysia/api/static/*
+          git add elysia/api/static/
+          
+          echo "Checking git status after add..."
+          git status --cached
+          
+          # Only commit if there are actually changes to commit
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
 
           echo "Committing changes with message: Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"
           git commit -m "Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"

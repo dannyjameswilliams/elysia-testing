@@ -148,30 +148,30 @@ jobs:
           echo "Pushing changes to branch: ${{ steps.working_branch.outputs.WORKING_BRANCH }}"
           git push origin ${{ steps.working_branch.outputs.WORKING_BRANCH }}
 
-    #   - name: Create Pull Request
-    #     if: steps.version.outputs.valid_version == 'true' && steps.branch_check.outputs.branch_exists == 'true'
-    #     uses: peter-evans/create-pull-request@v5
-    #     with:
-    #       token: ${{ secrets.GITHUB_TOKEN }}
-    #       commit-message: "Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"
-    #       title: "Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"
-    #       body: |
-    #         ## Automated Frontend Update
+      - name: Create Pull Request
+        if: steps.version.outputs.valid_version == 'true' && steps.branch_check.outputs.branch_exists == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"
+          title: "Auto-update from frontend release ${{ github.event.client_payload.release_tag }}"
+          body: |
+            ## Automated Frontend Update
             
-    #         This PR was automatically created in response to a new release from the frontend repository.
+            This PR was automatically created in response to a new release from the frontend repository.
             
-    #         **Release Details:**
-    #         - Tag: `${{ github.event.client_payload.release_tag }}`
-    #         - URL: ${{ github.event.client_payload.release_url }}
-    #         - Target Branch: `${{ steps.version.outputs.target_branch }}`
+            **Release Details:**
+            - Tag: `${{ github.event.client_payload.release_tag }}`
+            - URL: ${{ github.event.client_payload.release_url }}
+            - Target Branch: `${{ steps.version.outputs.target_branch }}`
             
-    #         **Version Information:**
-    #         - Major: `${{ steps.version.outputs.major }}`
-    #         - Minor: `${{ steps.version.outputs.minor }}`
-    #         - Patch: `${{ steps.version.outputs.patch }}`
+            **Version Information:**
+            - Major: `${{ steps.version.outputs.major }}`
+            - Minor: `${{ steps.version.outputs.minor }}`
+            - Patch: `${{ steps.version.outputs.patch }}`
             
-    #         Please review the changes before merging into `${{ steps.version.outputs.target_branch }}`.
-    #       branch: ${{ steps.working_branch.outputs.working_branch }}
-    #       base: ${{ steps.version.outputs.target_branch }}
-    #       delete-branch: true
-    #       draft: false
+            Please review the changes before merging into `${{ steps.version.outputs.target_branch }}`.
+          branch: ${{ steps.working_branch.outputs.working_branch }}
+          base: ${{ steps.version.outputs.target_branch }}
+          delete-branch: false
+          draft: false

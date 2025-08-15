@@ -98,7 +98,7 @@ jobs:
           git config --local user.name "GitHub Action"
 
           echo "Pulling latest changes from origin"
-          git pull origin ${{ steps.working_branch.outputs.WORKING_BRANCH }}
+          git pull origin ${{ steps.working_branch.outputs.TARGET_BRANCH }}
           
           echo "Switching to working branch: ${{ steps.working_branch.outputs.WORKING_BRANCH }}"
           git checkout ${{ steps.working_branch.outputs.WORKING_BRANCH }}

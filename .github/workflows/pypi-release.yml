@@ -71,6 +71,12 @@ jobs:
       id-token: write
 
     steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: true
+        fetch-depth: 0
+
     - name: Download all the dists
       uses: actions/download-artifact@v4
       with:

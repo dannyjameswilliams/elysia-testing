@@ -2,6 +2,9 @@ name: Publish to PyPI
 
 on:
   push:
+    branches:
+      - main
+      - release/*
     tags:
       - "v*"
 
@@ -9,6 +12,10 @@ jobs:
   build:
     name: Build and publish
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'dannyjameswilliams'
+    permissions:
+      id-token: write
+      contents: write
 
     steps:
       - name: Check out repository
@@ -33,7 +40,8 @@ jobs:
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           echo "Setting version to $TAG_VERSION in pyproject.toml"
-          python -c "import toml; data = toml.load('pyproject.toml'); data['project']['version'] = '$TAG_VERSION'; toml.dump(data, open('pyproject.toml', 'w'))"
+          sed -i '' '/#replace_package_version_marker/{n;s/version *= *"[^"]*"/version="$TAG_VERSION"/;}' pyproject.toml
+          sed -i '' "/# replace_package_version_marker/{n;s/__version__ *= *\"[^\"]*\"/__version__=\"$TAG_VERSION\"/;}" ./elysia/__metadata__.py
 
       - name: Install pypa/build
         run: >-
@@ -60,7 +68,6 @@ jobs:
     
     environment:
       name: pypi
-      url: https://pypi.org/p/elysia-ai
     
     permissions:
       id-token: write
@@ -72,10 +79,41 @@ jobs:
         name: python-package-distributions
         path: dist/
 
+    - name: Create test environment
+      run: python -m venv test_before_pypi
+
+    - name: Check the install
+      run: |
+          source test_before_pypi/bin/activate
+          pip install dist/*.whl
+          deactivate
+          rm -r test_before_pypi
+
     - name: Publish release distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages-dir: dist/
+        repository-url: https://test.pypi.org/legacy/
+
+    - uses: stefanzweifel/git-auto-commit-action@v5 # auto commit changes to main
+      with:
+        commit_message: Update versions
+        create_branch: true
+        branch: release/${{ github.ref }}
+    - name: Checkout main branch
+      run: |
+        git fetch origin
+        git checkout main
+    - name: Configure git user
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "Github Actions"
+    - name: Merge release branch into main
+      run: |
+        git merge --no-ff release/${{ github.ref }}
+    - name: Push changes to main
+      run: |
+        git push origin main
 
 
   create-release:

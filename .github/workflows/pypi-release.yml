@@ -6,13 +6,16 @@ on:
       - "v*"
 
 jobs:
-  build:
-    name: Build
+  build-and-publish:
+    name: Build and publish to PyPI
     runs-on: ubuntu-latest
     if: github.repository_owner == 'dannyjameswilliams'
     permissions:
       id-token: write
       contents: write
+
+    environment:
+      name: pypi
 
     steps:
       - name: Check out repository
@@ -51,72 +54,46 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python3 -m build
 
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
         with:
-          name: python-package-distributions
-          path: dist/
+          persist-credentials: true
+          fetch-depth: 0
 
-  publish-to-pypi:
-    name: >-
-      Publish Python distribution to PyPI
-    needs:
-    - build
-    runs-on: ubuntu-latest
-    
-    environment:
-      name: pypi
-    
-    permissions:
-      id-token: write
+      - name: Create test environment
+        run: python -m venv test_before_pypi
 
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v4
-      with:
-        persist-credentials: true
-        fetch-depth: 0
+      - name: Check the install
+        run: |
+            source test_before_pypi/bin/activate
+            pip install dist/*.whl
+            deactivate
+            rm -r test_before_pypi
 
-    - name: Download all the dists
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-
-    - name: Create test environment
-      run: python -m venv test_before_pypi
-
-    - name: Check the install
-      run: |
-          source test_before_pypi/bin/activate
-          pip install dist/*.whl
-          deactivate
-          rm -r test_before_pypi
-
-    - uses: stefanzweifel/git-auto-commit-action@v5 # auto commit changes to main
-      with:
-        commit_message: Update versions
-        create_branch: true
-        branch: release/${{ github.ref }}
-    - name: Checkout main branch
-      run: |
-        git fetch origin
-        git checkout main
-    - name: Configure git user
-      run: |
-        git config --global user.email "actions@github.com"
-        git config --global user.name "Github Actions"
-    - name: Merge release branch into main
-      run: |
-        git merge --no-ff release/${{ github.ref }}
-    - name: Push changes to main
-      run: |
-        git push origin main
+      - uses: stefanzweifel/git-auto-commit-action@v5 # auto commit changes to main
+        with:
+          commit_message: Update versions
+          create_branch: true
+          branch: release/${{ github.ref }}
+      - name: Checkout main branch
+        run: |
+          git fetch origin
+          git checkout main
+      - name: Configure git user
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "Github Actions"
+      - name: Merge release branch into main
+        run: |
+          git merge --no-ff release/${{ github.ref }}
+      - name: Push changes to main
+        run: |
+          git push origin main
 
 
   create-release:
     name: Create Release
-    needs: publish-to-pypi
+    needs: build-and-publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

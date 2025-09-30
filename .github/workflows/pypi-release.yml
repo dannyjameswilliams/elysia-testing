@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build and publish
+    name: Build
     runs-on: ubuntu-latest
     if: github.repository_owner == 'dannyjameswilliams'
     permissions:
@@ -86,12 +86,6 @@ jobs:
           pip install dist/*.whl
           deactivate
           rm -r test_before_pypi
-
-    - name: Publish release distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        packages-dir: dist/
-        repository-url: https://test.pypi.org/legacy/
 
     - uses: stefanzweifel/git-auto-commit-action@v5 # auto commit changes to main
       with:

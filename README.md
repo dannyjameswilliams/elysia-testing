@@ -101,10 +101,11 @@ Done! You can now use the Elysia python package
 
 ### Configuring Settings
 
-To use Elysia with Weaviate, i.e. for agentic searching and retrieval, you need a Weaviate cluster api key and URL. This can be specific in the app directly, or by creating a `.env` file with
+To use Elysia with Weaviate, i.e. for agentic searching and retrieval, you need to either have a *locally running* instance of Weaviate, or access to a *Weaviate cloud cluster* via an api key and URL. This can be specific in the app directly, or by creating a `.env` file with
 ```
 WCD_URL=...
 WCD_API_KEY=...
+WEAVIATE_IS_LOCAL=... # True or False
 ```
 Elysia will automatically detect these when running locally, and this will be the default Weaviate cluster for all users logging into the Elysia app. But these can be configured on a user-by-user basis through the config.
 
@@ -131,18 +132,32 @@ You can connect to your own Weaviate cloud cluster, which will automatically ide
 Collections require being _preprocessed_ for Elysia. In the app, you just click the 'analyze' button in the Data tab. In Python you can do:
 
 ```python
-from elysia.preprocess.collection import preprocess
+from elysia.preprocessing.collection import preprocess
 
 preprocess(collection_names=["YourCollectionName"])
 ```
 
 </details>
 
+
 <details>
-<summary><b>Can I use a locally running version of Weaviate such as with Docker?</b></summary>
-Locally running versions of Weaviate are currently not implemented in the current version of the app but this is planned for a future release. Stay tuned!
+<summary><b>Can I run Elysia completely locally? (Locally running Weaviate, local models)</b></summary>
+
+Yes!
+
+You can connect to a locally running Weaviate instance in Docker, and connect to Ollama for locally running language models.
+[See the setup page to get started.](https://weaviate.github.io/elysia/setting_up/)
+
 </details>
 
+<details>
+<summary><b>Help! My local model isn't working with Elysia. It's timing out or there are errors.</b></summary>
+
+Elysia works with quite long context, so some smaller models will struggle with this - it will either take a very long time to complete or the model will error to output the correct structured response.
+
+For a complete guide and troubleshooting, [see this page of the documentation](https://weaviate.github.io/elysia/Advanced/local_models/).
+
+</details>
 
 <details>
 <summary><b>How do I clear all my Elysia data?</b></summary>
@@ -180,4 +195,3 @@ Make your changes, push them to your branch, go to GitHub and submit a pull requ
 There are no 'huge' new features we are planning for Elysia (for the moment). You could start with creating a new tool, or multiple new tools to create a custom workflow for something specific. Look for pain points you experience from your user journey and find what exactly is causing these. Then try to fix them or create an alternative way of doing things!
 
 </details>
-

@@ -37,8 +37,9 @@ jobs:
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           echo "Setting version to $TAG_VERSION in pyproject.toml"
-          sed -i '' '/#replace_package_version_marker/{n;s/version *= *"[^"]*"/version="$TAG_VERSION"/;}' pyproject.toml
-          sed -i '' "/# replace_package_version_marker/{n;s/__version__ *= *\"[^\"]*\"/__version__=\"$TAG_VERSION\"/;}" ./elysia/__metadata__.py
+          # Use sed without the '' flag for Linux compatibility
+          sed -i "/#replace_package_version_marker/{n;s/version *= *\"[^\"]*\"/version=\"$TAG_VERSION\"/;}" pyproject.toml
+          sed -i "/# replace_package_version_marker/{n;s/__version__ *= *\"[^\"]*\"/__version__=\"$TAG_VERSION\"/;}" ./elysia/__metadata__.py
 
       - name: Install pypa/build
         run: >-
